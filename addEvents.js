@@ -1,4 +1,5 @@
 const Moralis = require("moralis/node")
+const { list } = require("postcss")
 require("dotenv").config()
 const contractAddresses = require("./constants/networkMapping.json")
 let chainId = process.env.chainId || 31337
@@ -122,18 +123,19 @@ async function main() {
             name: "ItemCanceled",
             type: "event",
         },
-        tableName: "ItemCanceled"
+        tableName: "ItemCanceled",
     }
 
     const listedResponse = await Moralis.Cloud.run("watchContractEvent", itemListedOptions, {
         useMasterKey: true,
     })
-    const boughtResponse = await Moralis.Cloud.run("watchContractEvent", itemBoughtOptions, {
-        useMasterKey: true,
-    })
     const canceledResponse = await Moralis.Cloud.run("watchContractEvent", itemCanceledOptions, {
         useMasterKey: true,
     })
+    const boughtResponse = await Moralis.Cloud.run("watchContractEvent", itemBoughtOptions, {
+        useMasterKey: true,
+    })
+    console.log(listedResponse.success, canceledResponse.success, boughtResponse.success)
     if (listedResponse.success && canceledResponse.success && boughtResponse.success) {
         console.log("Success! Database Updated with watching events")
     } else {
